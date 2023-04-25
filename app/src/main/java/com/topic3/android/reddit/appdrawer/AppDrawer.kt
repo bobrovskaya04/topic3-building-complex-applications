@@ -20,9 +20,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.material.*
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.*
+import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 
 import com.topic3.android.reddit.theme.RedditThemeSettings
 
@@ -68,8 +70,11 @@ private fun AppDrawerHeader() {
 
      )
     Text(text = stringResource(id = R.string.default_username),
-      color = MaterialTheme.colors.primaryVariant)
+      color = MaterialTheme.colors.primaryVariant
+    )
+    ProfileInfo()
   }
+
   Divider(
     color = MaterialTheme.colors.onSurface.copy(alpha = .2f),
     modifier = Modifier.padding(
@@ -80,8 +85,43 @@ private fun AppDrawerHeader() {
 }
 
 @Composable
-fun ProfileInfo() {
-  //TODO add your code here
+fun ProfileInfo(modifier: Modifier = Modifier) {
+  ConstraintLayout(
+    modifier = modifier
+      .fillMaxWidth()
+      .padding(top = 16.dp)
+  ) {
+    val (karmaItem, divider, ageItem) = createRefs()
+    val colors = MaterialTheme.colors
+
+    ProfileInfoItem(
+      Icons.Filled.Star,
+      R.string.default_karma_amount,
+      R.string.karma,
+      modifier = modifier.constrainAs(karmaItem){
+        centerVerticallyTo(parent)
+        start.linkTo(parent.start)
+      }
+    )
+    Divider(
+      modifier = modifier
+        .width(1.dp)
+        .constrainAs(divider) {
+          centerVerticallyTo(karmaItem)
+          centerHorizontallyTo(parent)
+          height = Dimension.fillToConstraints
+        },
+      color = colors.onSurface.copy(alpha = .2f)
+    )
+    ProfileInfoItem(Icons.Filled.ShoppingCart,
+      R.string.default_reddit_age_amount,
+      R.string.reddit_age,
+      modifier = modifier.constrainAs(ageItem){
+        start.linkTo(divider.end)
+        centerVerticallyTo(parent)
+      }
+    )
+  }
 }
 
 @Composable
@@ -125,7 +165,7 @@ private fun ProfileInfoItem(
       fontSize = 10.sp,
       modifier = itemModifier
         .padding(start = 8.dp)
-        .constrainAs(titleRef){
+        .constrainAs(titleRef) {
           top.linkTo(amountRef.bottom)
           start.linkTo(iconRef.end)
           bottom.linkTo(iconRef.bottom)
